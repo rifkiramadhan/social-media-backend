@@ -132,7 +132,7 @@ const userController = {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      //! Fild the user
+      //! Field the user
       const user = await User.findById(decoded.id);
 
       if (!user) {
@@ -153,6 +153,15 @@ const userController = {
         error,
       });
     }
+  }),
+
+  //---- Logout ----//
+  logout: asyncHandler(async (req, res) => {
+    res.cookie('token', '', { maxAge: 1 });
+
+    res.status(200).json({
+      message: 'Logout Success',
+    });
   }),
 };
 

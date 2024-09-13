@@ -4,7 +4,7 @@ const Post = require('../../models/Post/Post');
 const postController = {
   //---- Create Post ----//
   createPost: asyncHandler(async (req, res) => {
-    console.log(req.file);
+    console.log(req.user);
     //! Get the payload
     const { description } = req.body;
 
@@ -18,6 +18,7 @@ const postController = {
     const postCreated = await Post.create({
       description,
       image: req.file,
+      author: req.user,
     });
 
     res.json({
