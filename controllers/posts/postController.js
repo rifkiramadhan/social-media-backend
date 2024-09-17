@@ -1,12 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const Post = require('../../models/Post/Post');
+const Category = require('../../models/Category/Category');
 
 const postController = {
   //---- Create Post ----//
   createPost: asyncHandler(async (req, res) => {
-    console.log(req.user);
     //! Get the payload
-    const { description } = req.body;
+    const { description, category } = req.body;
 
     //! Find the post by title
     // const postFound = await Post.findOne({ title });
@@ -15,11 +15,25 @@ const postController = {
     //   throw new Error('Post already exists!');
     // }
 
+    //! Find the category
+    const categoryFound = await Category.findById(category);
+
+    if (!categoryFound) {
+      throw new Error('Category not found!');
+    }
+
     const postCreated = await Post.create({
       description,
       image: req.file,
       author: req.user,
+      category,
     });
+
+    //! Push the post into category
+    categoryFound.posts.push(categoryFound?._id);
+
+    //! Resave the category
+    await categoryFound.save();
 
     res.json({
       status: 'success',
@@ -30,12 +44,35 @@ const postController = {
 
   //----List All Posts ----//
   fetchAllPosts: asyncHandler(async (req, res) => {
-    const posts = await Post.find();
+    const { category, title, page = 1, limit = 10 } = req.query;
+
+    //! Basic Filter
+    let filter = {};
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (title) {
+      filter.description = { $regex: title, $options: 'i' }; //! Case Insensitive
+    }
+
+    const posts = await Post.find(filter)
+      .populate('category')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    //! Total Posts
+    const totalPosts = await Post.countDocuments(filter);
 
     res.json({
       status: 'success',
       message: 'Post fetched successfully',
       posts,
+      currentPage: page,
+      perPage: limit,
+      totalPages: Math.ceil(totalPosts / limit),
     });
   }),
 

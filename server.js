@@ -4,8 +4,9 @@ const passport = require('./utils/passport-config');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./utils/connectDB');
-const postRouter = require('./router/post/postsRouter');
+const postsRouter = require('./router/post/postsRouter');
 const usersRouter = require('./router/user/usersRouter');
+const categoriesRouter = require('./router/category/categoriesRouter');
 
 //! Call the db
 connectDB();
@@ -31,8 +32,9 @@ app.use(passport.initialize());
 app.use(cookieParser()); //! Automatically parses the cookie
 
 //! Route Handler
-app.use('/api/v1/posts', postRouter);
+app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/categories', categoriesRouter);
 
 //! Not Found Handler
 app.use((req, res, next) => {

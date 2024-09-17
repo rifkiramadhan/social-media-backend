@@ -8,10 +8,10 @@ const isAuthenticated = require('../../middlewares/isAuthenticated');
 const upload = multer({ storage: storage });
 
 //! Create instance express router
-const postRouter = express.Router();
+const postsRouter = express.Router();
 
 //---- Create Post ----//
-postRouter.post(
+postsRouter.post(
   '/create',
   isAuthenticated,
   upload.single('image'),
@@ -19,15 +19,15 @@ postRouter.post(
 );
 
 //---- Lists All Posts ----//
-postRouter.get('/', postController.fetchAllPosts);
+postsRouter.get('/', postController.fetchAllPosts);
 
 //---- Update Post ----//
-postRouter.put('/:postId', isAuthenticated, postController.update);
+postsRouter.put('/:postId', isAuthenticated, postController.update);
 
 //---- Get Post ----//
-postRouter.get('/:postId', postController.getPost);
+postsRouter.get('/:postId', postController.getPost);
 
 //---- Delete Post ----//
-postRouter.delete('/:postId', isAuthenticated, postController.delete);
+postsRouter.delete('/:postId', isAuthenticated, postController.delete);
 
-module.exports = postRouter;
+module.exports = postsRouter;
