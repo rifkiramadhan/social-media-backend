@@ -7,6 +7,7 @@ const connectDB = require('./utils/connectDB');
 const postsRouter = require('./router/post/postsRouter');
 const usersRouter = require('./router/user/usersRouter');
 const categoriesRouter = require('./router/category/categoriesRouter');
+const plansRouter = require('./router/plan/plansRouter');
 
 //! Call the db
 connectDB();
@@ -35,6 +36,7 @@ app.use(cookieParser()); //! Automatically parses the cookie
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/categories', categoriesRouter);
+app.use('/api/v1/plans', plansRouter);
 
 //! Not Found Handler
 app.use((req, res, next) => {
