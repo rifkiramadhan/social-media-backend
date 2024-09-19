@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
       default: () =>
         new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1), // Sets to the first day of the next month
     },
-    Plan: {
+    plan: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Plan',
     },

@@ -1,6 +1,6 @@
 const express = require('express');
 const isAuthenticated = require('../../middlewares/isAuthenticated');
-const planController = require('../../controllers/plan/planController');
+const planController = require('../../controllers/plans/planController');
 
 //! Create instance express router
 const plansRouter = express.Router();
