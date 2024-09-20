@@ -97,8 +97,26 @@ const postController = {
     //! Get the post id from params
     const postId = req.params.postId;
 
+    //! Check for login user
+    const userId = req.user ? req.user : null;
+
     //! Find the post
     const postFound = await Post.findById(postId);
+
+    if (!postFound) {
+      throw new Error('Post not found!');
+    }
+
+    if (!userId) {
+      postFound.viewsCount = postFound?.viewsCount + 1;
+      await postFound.save();
+    } else {
+      if (!postFound?.viewers.includes(userId)) {
+        postFound.viewers.push(userId);
+        postFound.viewsCount = postFound?.viewsCount + 1;
+        await postFound.save();
+      }
+    }
 
     res.json({
       status: 'success',

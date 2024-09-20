@@ -4,6 +4,7 @@ const multer = require('multer');
 const storage = require('../../utils/fileupload');
 const isAuthenticated = require('../../middlewares/isAuthenticated');
 const checkUserPlan = require('../../middlewares/checkUserPlan');
+const optionalAuth = require('../../middlewares/optionalAuth');
 
 //! Create instance express router
 const upload = multer({ storage: storage });
@@ -27,7 +28,7 @@ postsRouter.get('/', postController.fetchAllPosts);
 postsRouter.put('/:postId', isAuthenticated, postController.update);
 
 //---- Get Post ----//
-postsRouter.get('/:postId', postController.getPost);
+postsRouter.get('/:postId', optionalAuth, postController.getPost);
 
 //---- Delete Post ----//
 postsRouter.delete('/:postId', isAuthenticated, postController.delete);
