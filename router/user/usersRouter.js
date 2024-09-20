@@ -12,5 +12,15 @@ usersRouter.get('/auth/google/callback', userController.googleAuthCallback);
 usersRouter.get('/checkAuthenticated', userController.checkAuthenticated);
 usersRouter.post('/logout', userController.logout);
 usersRouter.get('/profile', isAuthenticated, userController.profile);
+usersRouter.put(
+  '/follow/:followId',
+  isAuthenticated,
+  userController.followUser
+);
+usersRouter.put(
+  '/unfollow/:unfollowId',
+  isAuthenticated,
+  userController.unFollowUser
+);
 
 module.exports = usersRouter;
