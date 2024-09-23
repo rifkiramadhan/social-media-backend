@@ -19,7 +19,7 @@ const sendAccVerificationEmail = async (to, token) => {
       subject: 'Account Verification',
       html: `<p>You are receiving this email because you (or someone else) have requested to verify your account.</p>
       <p>Please click on the follow ling, or posts this into your browser to complete the process:</p>
-      <p>http://localhost:5173/account-verification/${token}</p>
+      <p>http://localhost:5173/dashboard/account-verification/${token}</p>
       <p>If you did not request this, please ignore this email and your password will remain uncharged.</p>`,
     };
     //! Send the mail

@@ -255,7 +255,7 @@ const userController = {
 
     //! Use the method from the model
     const token = await user.generateAccVerificationToken();
-    console.log(token);
+
     //! Resave the user
     await user.save();
 
@@ -263,7 +263,6 @@ const userController = {
     sendAccVerificationEmail(user?.email, token);
 
     res.json({
-      token,
       message: `Account verification email sent to ${user?.email} token expires in 10 minutes.`,
     });
   }),
@@ -272,13 +271,13 @@ const userController = {
   verifyEmailAccount: asyncHandler(async (req, res) => {
     //! Get the token
     const { verifyToken } = req.params;
-    console.log(verifyToken);
+
     //! Convert the token to actual token that has been saved in our db
     const cryptoToken = crypto
       .createHash('sha256')
       .update(verifyToken)
       .digest('hex');
-    console.log(cryptoToken);
+
     //! Find the user
     const userFound = await User.findOne({
       accountVerificationToken: cryptoToken,
@@ -289,7 +288,6 @@ const userController = {
       throw new Error('Account verification expires!');
     }
 
-    console.log(userFound);
     //! Update the user field
     userFound.isEmailVerified = true;
     userFound.accountVerificationToken = null;

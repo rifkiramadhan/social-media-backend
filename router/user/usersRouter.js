@@ -22,12 +22,12 @@ usersRouter.put(
   isAuthenticated,
   userController.unFollowUser
 );
-usersRouter.get(
+usersRouter.put(
   '/account-verification-email',
   isAuthenticated,
   userController.verifyEmailAccountToken
 );
-usersRouter.get(
+usersRouter.put(
   '/verify-account/:verifyToken',
   isAuthenticated,
   userController.verifyEmailAccount
