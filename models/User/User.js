@@ -31,10 +31,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: 'local',
     },
-    passwordResetToken: {
-      type: String,
-      default: null,
-    },
     accountVerificationToken: {
       type: String,
       default: null,
@@ -45,6 +41,10 @@ const userSchema = new mongoose.Schema(
     },
     passwordResetExpires: {
       type: Date,
+      default: null,
+    },
+    passwordResetToken: {
+      type: String,
       default: null,
     },
     posts: [
@@ -113,6 +113,19 @@ userSchema.methods.generateAccVerificationToken = function () {
     .digest('hex');
 
   this.accountVerificationExpires = Date.now() + 10 * 60 * 1000; //! 10 Minutes
+
+  return emailToken;
+};
+
+//! Generate token for password reset
+userSchema.methods.generatePasswordResetToken = function () {
+  const emailToken = crypto.randomBytes(20).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(emailToken)
+    .digest('hex');
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //! 10 Minutes
 
   return emailToken;
 };

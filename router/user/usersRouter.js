@@ -32,5 +32,7 @@ usersRouter.put(
   isAuthenticated,
   userController.verifyEmailAccount
 );
+usersRouter.post('/forgot-password', userController.forgotPassword);
+usersRouter.post('/reset-password/:verifyToken', userController.resetPassword);
 
 module.exports = usersRouter;

@@ -5,6 +5,7 @@ const User = require('../../models/User/User');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const sendAccVerificationEmail = require('../../utils/sendAccVerificationEmail');
+const sendPasswordEmail = require('../../utils/sendPasswordEmail');
 
 //---- User Controller ----//
 const userController = {
@@ -297,6 +298,76 @@ const userController = {
 
     res.send({
       message: 'Account verification successfully',
+      verifyToken,
+    });
+  }),
+
+  //! Forgot Password (Sending Email Token)
+  forgotPassword: asyncHandler(async (req, res) => {
+    //! Find the user email
+    const { email } = req.body;
+
+    //! Find the user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error(`User with email ${email} is not found in our database!`);
+    }
+
+    //! Check if user registered with google
+    if (user.authMethod !== 'local') {
+      throw new Error('Please login with your social account!');
+    }
+
+    //! Use the method from the model
+    const token = await user.generatePasswordResetToken();
+
+    //! Resave the user
+    await user.save();
+
+    //! Send the email
+    sendPasswordEmail(user?.email, token);
+
+    res.json({
+      message: `Password reset email sent to ${email}`,
+    });
+  }),
+
+  //! Reset Password
+  resetPassword: asyncHandler(async (req, res) => {
+    //! Get the token
+    const { verifyToken } = req.params;
+    const { password } = req.body;
+
+    //! Convert the token to actual token that has been saved in our db
+    const cryptoToken = crypto
+      .createHash('sha256')
+      .update(verifyToken)
+      .digest('hex');
+
+    //! Find the user
+    const userFound = await User.findOne({
+      passwordResetToken: cryptoToken,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!userFound) {
+      throw new Error('Password reset token expires!');
+    }
+
+    //! Update the user field
+    //! Change the password
+    const salt = await bcrypt.genSalt(10);
+
+    userFound.password = await bcrypt.hash(password, salt);
+    userFound.passwordResetToken = null;
+    userFound.passwordResetExpires = null;
+
+    //! Resave the user
+    await userFound.save();
+
+    res.send({
+      message: 'Password successfully reset',
       verifyToken,
     });
   }),
