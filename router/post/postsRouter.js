@@ -5,6 +5,7 @@ const storage = require('../../utils/fileupload');
 const isAuthenticated = require('../../middlewares/isAuthenticated');
 const checkUserPlan = require('../../middlewares/checkUserPlan');
 const optionalAuth = require('../../middlewares/optionalAuth');
+const isAccountVerified = require('../../middlewares/isAccountVerified');
 
 //! Create instance express router
 const upload = multer({ storage: storage });
@@ -17,6 +18,7 @@ postsRouter.post(
   '/create',
   isAuthenticated,
   checkUserPlan,
+  isAccountVerified,
   upload.single('image'),
   postController.createPost
 );

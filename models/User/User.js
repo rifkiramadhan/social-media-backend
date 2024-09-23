@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 //! User Schema
 const userSchema = new mongoose.Schema(
@@ -32,14 +33,6 @@ const userSchema = new mongoose.Schema(
     },
     passwordResetToken: {
       type: String,
-      default: null,
-    },
-    accountVerificationToken: {
-      type: String,
-      default: null,
-    },
-    accountVerificationExpires: {
-      type: Date,
       default: null,
     },
     accountVerificationToken: {
@@ -110,6 +103,19 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+//! Generate token for account verification
+userSchema.methods.generateAccVerificationToken = function () {
+  const emailToken = crypto.randomBytes(20).toString('hex');
+  this.accountVerificationToken = crypto
+    .createHash('sha256')
+    .update(emailToken)
+    .digest('hex');
+
+  this.accountVerificationExpires = Date.now() + 10 * 60 * 1000; //! 10 Minutes
+
+  return emailToken;
+};
 
 //! User Model
 module.exports = mongoose.model('User', userSchema);

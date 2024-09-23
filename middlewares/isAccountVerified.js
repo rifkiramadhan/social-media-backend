@@ -1,15 +1,15 @@
 const User = require('../models/User/User');
 const asyncHandler = require('express-async-handler');
 
-const checkUserPlan = asyncHandler(async (req, res, next) => {
+const isAccountVerified = asyncHandler(async (req, res, next) => {
   try {
     //! Get the login user
     const user = await User.findById(req.user);
 
     //! Check user plan
-    if (!user?.hasSelectedPlan) {
+    if (!user?.isEmailVerified) {
       return res.status(401).json({
-        message: 'You must select a plan before creating a post!',
+        message: 'Action denied, email not verified!',
       });
     }
 
@@ -19,4 +19,4 @@ const checkUserPlan = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = checkUserPlan;
+module.exports = isAccountVerified;

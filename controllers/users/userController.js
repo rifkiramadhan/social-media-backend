@@ -1,8 +1,10 @@
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const User = require('../../models/User/User');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const sendAccVerificationEmail = require('../../utils/sendAccVerificationEmail');
 
 //---- User Controller ----//
 const userController = {
@@ -235,6 +237,69 @@ const userController = {
 
     res.json({
       message: 'User unfollowed',
+    });
+  }),
+
+  //! Verify Email Account Token
+  verifyEmailAccountToken: asyncHandler(async (req, res) => {
+    //! Find the login user
+    const user = await User.findById(req.user);
+    if (!user) {
+      throw new Error('User not found please login!');
+    }
+
+    //! Check if user email exists
+    if (!user?.email) {
+      throw new Error('Email not found!');
+    }
+
+    //! Use the method from the model
+    const token = await user.generateAccVerificationToken();
+    console.log(token);
+    //! Resave the user
+    await user.save();
+
+    //! Send the email
+    sendAccVerificationEmail(user?.email, token);
+
+    res.json({
+      token,
+      message: `Account verification email sent to ${user?.email} token expires in 10 minutes.`,
+    });
+  }),
+
+  //! Verify Email Account
+  verifyEmailAccount: asyncHandler(async (req, res) => {
+    //! Get the token
+    const { verifyToken } = req.params;
+    console.log(verifyToken);
+    //! Convert the token to actual token that has been saved in our db
+    const cryptoToken = crypto
+      .createHash('sha256')
+      .update(verifyToken)
+      .digest('hex');
+    console.log(cryptoToken);
+    //! Find the user
+    const userFound = await User.findOne({
+      accountVerificationToken: cryptoToken,
+      accountVerificationExpires: { $gt: Date.now() },
+    });
+
+    if (!userFound) {
+      throw new Error('Account verification expires!');
+    }
+
+    console.log(userFound);
+    //! Update the user field
+    userFound.isEmailVerified = true;
+    userFound.accountVerificationToken = null;
+    userFound.accountVerificationExpires = null;
+
+    await userFound.save();
+
+    res.send({
+      message: 'Account verification successfully',
+      verifyToken,
     });
   }),
 };
