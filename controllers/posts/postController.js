@@ -97,15 +97,27 @@ const postController = {
       throw new Error('Post not found!');
     }
 
-    if (!userId) {
-      postFound.viewsCount = postFound?.viewsCount + 1;
-      await postFound.save();
-    } else {
-      if (!postFound?.viewers.includes(userId)) {
-        postFound.viewers.push(userId);
-        postFound.viewsCount = postFound?.viewsCount + 1;
-        await postFound.save();
-      }
+    // if (!userId) {
+    //   postFound.viewsCount = postFound?.viewsCount + 1;
+    //   await postFound.save();
+    // } else {
+    //   if (!postFound?.viewers.includes(userId)) {
+    //     postFound.viewers.push(userId);
+    //     postFound.viewsCount = postFound?.viewsCount + 1;
+    //     await postFound.save();
+    //   }
+    // }
+
+    if (userId) {
+      await Post.findByIdAndUpdate(
+        postId,
+        {
+          $addToSet: { viewers: userId },
+        },
+        {
+          new: true,
+        }
+      );
     }
 
     res.json({

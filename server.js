@@ -2,6 +2,7 @@ require('dotenv').config();
 const cors = require('cors');
 const passport = require('./utils/passport-config');
 const express = require('express');
+const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./utils/connectDB');
 const postsRouter = require('./router/post/postsRouter');
@@ -9,9 +10,31 @@ const usersRouter = require('./router/user/usersRouter');
 const categoriesRouter = require('./router/category/categoriesRouter');
 const plansRouter = require('./router/plan/plansRouter');
 const stripePaymentRouter = require('./router/stripePayment/stripePaymentRouter');
+const calculateEarnings = require('./utils/calculateEarnings');
+const { schedule } = require('node-cron');
+const earningsRouter = require('./router/earning/earningsRouter');
 
 //! Call the db
 connectDB();
+
+//! Schedule the task to run at 23:59 on the last day of every month
+cron.schedule(
+  '59 23 * * * ',
+  async () => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (today.getMonth() !== tomorrow.getMonth()) {
+      //! Calculate Earnings
+      calculateEarnings();
+    }
+  },
+  {
+    schedule: true,
+    timezone: 'America/New_York',
+  }
+);
 
 const app = express();
 
@@ -39,6 +62,7 @@ app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/categories', categoriesRouter);
 app.use('/api/v1/plans', plansRouter);
 app.use('/api/v1/stripe', stripePaymentRouter);
+app.use('/api/v1/earnings', earningsRouter);
 
 //! Not Found Handler
 app.use((req, res, next) => {

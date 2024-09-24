@@ -18,7 +18,7 @@ const earningsSchema = new mongoose.Schema(
     },
     calculatedOn: {
       type: Date,
-      default: date.now,
+      default: Date.now,
     },
   },
   {
