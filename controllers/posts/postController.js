@@ -9,31 +9,19 @@ const postController = {
     //! Get the payload
     const { description, category } = req.body;
 
-    //! Find the post by title
-    // const postFound = await Post.findOne({ title });
-
-    // if (postFound) {
-    //   throw new Error('Post already exists!');
-    // }
-
     //! Find the category
     const categoryFound = await Category.findById(category);
-
-    //! Push the posts into user
-
     if (!categoryFound) {
       throw new Error('Category not found!');
     }
 
     //! Find the user
     const userFound = await User.findById(req.user);
-
-    //! Push the posts into user
-
     if (!userFound) {
       throw new Error('User not found!');
     }
 
+    //! Create the post
     const postCreated = await Post.create({
       description,
       image: req.file,
@@ -41,14 +29,16 @@ const postController = {
       category,
     });
 
-    //! Push the post into category
-    categoryFound.posts.push(categoryFound?._id);
+    //! Push the post into category (Corrected)
+    categoryFound.posts.push(postCreated._id);
 
-    //! Resave the category
+    //! Save the updated category
     await categoryFound.save();
 
-    userFound.posts.push(postCreated?._id);
+    //! Push the post into user
+    userFound.posts.push(postCreated._id);
 
+    //! Save the updated user
     await userFound.save();
 
     res.json({
@@ -130,6 +120,21 @@ const postController = {
     //! Get the post id from params
     const postId = req.params.postId;
 
+    //! Find the post
+    const postFound = await Post.findById(postId);
+
+    if (!postFound) {
+      throw new Error('Post not found!');
+    }
+
+    //! Remove post from the category
+    const categoryFound = await Category.findById(postFound.category);
+
+    if (categoryFound) {
+      categoryFound.posts.pull(postFound._id);
+      await categoryFound.save();
+    }
+
     //! Delete the post
     await Post.findByIdAndDelete(postId);
 
@@ -141,8 +146,6 @@ const postController = {
 
   //---- Update Post ----//
   update: asyncHandler(async (req, res) => {
-    console.log(req.params);
-
     //! Get the post id from params
     const postId = req.params.postId;
 
@@ -153,12 +156,32 @@ const postController = {
       throw new Error('Post not found!');
     }
 
-    //! Update
+    const { description, category } = req.body;
+
+    //! Check if the category has been updated
+    if (postFound.category.toString() !== category) {
+      //! Remove post from the old category
+      const oldCategory = await Category.findById(postFound.category);
+      if (oldCategory) {
+        oldCategory.posts.pull(postFound._id); //! Remove post ID from old category
+        await oldCategory.save(); //! Save the old category after removing post ID
+      }
+
+      //! Add post to the new category
+      const newCategory = await Category.findById(category);
+      if (newCategory) {
+        newCategory.posts.push(postFound._id); //! Add post ID to new category
+        await newCategory.save(); //! Save the new category after adding post ID
+      }
+    }
+
+    //! Update the post with new data
     const postUpdated = await Post.findByIdAndUpdate(
       postId,
       {
-        title: req.body.title,
-        description: req.body.description,
+        description: description || postFound.description, //! Update description if provided, or keep old
+        category: category || postFound.category, //! Update category if provided, or keep old
+        image: req.file || postFound.image, //! Update image if provided, or keep old
       },
       {
         new: true,
@@ -166,7 +189,8 @@ const postController = {
     );
 
     res.json({
-      status: 'Post updated successfully',
+      status: 'success',
+      message: 'Post updated successfully',
       postUpdated,
     });
   }),
