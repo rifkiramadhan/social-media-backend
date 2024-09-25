@@ -115,7 +115,12 @@ const postController = {
     const userId = req.user ? req.user : null;
 
     //! Find the post
-    const postFound = await Post.findById(postId);
+    const postFound = await Post.findById(postId).populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+      },
+    });
 
     if (!postFound) {
       throw new Error('Post not found!');
