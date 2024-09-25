@@ -2,6 +2,8 @@ const asyncHandler = require('express-async-handler');
 const Post = require('../../models/Post/Post');
 const Category = require('../../models/Category/Category');
 const User = require('../../models/User/User');
+const Notification = require('../../models/Notification/Notification');
+const sendNotificationMsg = require('../../utils/sendNotificationMsg');
 
 const postController = {
   //---- Create Post ----//
@@ -17,6 +19,7 @@ const postController = {
 
     //! Find the user
     const userFound = await User.findById(req.user);
+
     if (!userFound) {
       throw new Error('User not found!');
     }
@@ -30,16 +33,37 @@ const postController = {
     });
 
     //! Push the post into category (Corrected)
-    categoryFound.posts.push(postCreated._id);
+    categoryFound.posts.push(postCreated?._id);
 
     //! Save the updated category
     await categoryFound.save();
 
     //! Push the post into user
-    userFound.posts.push(postCreated._id);
+    userFound.posts.push(postCreated?._id);
 
     //! Save the updated user
     await userFound.save();
+
+    //! Create Notification
+    await Notification.create({
+      userId: req.user,
+      postId: postCreated._id,
+      message: `New post created by ${userFound.username}`,
+    });
+
+    //! Send email to all hus/her followers
+    userFound.followers.forEach(async follower => {
+      console.log(follower);
+
+      //! Find the users by id
+      const users = await User.find({ _id: follower });
+
+      //! Loop through the users
+      users.forEach(user => {
+        //! Send email
+        sendNotificationMsg(user.email, postCreated._id);
+      });
+    });
 
     res.json({
       status: 'success',
@@ -96,17 +120,6 @@ const postController = {
     if (!postFound) {
       throw new Error('Post not found!');
     }
-
-    // if (!userId) {
-    //   postFound.viewsCount = postFound?.viewsCount + 1;
-    //   await postFound.save();
-    // } else {
-    //   if (!postFound?.viewers.includes(userId)) {
-    //     postFound.viewers.push(userId);
-    //     postFound.viewsCount = postFound?.viewsCount + 1;
-    //     await postFound.save();
-    //   }
-    // }
 
     if (userId) {
       await Post.findByIdAndUpdate(

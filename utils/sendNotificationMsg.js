@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const sendPasswordEmail = async (to, resetToken) => {
+const sendNotificationMsg = async (to, postId) => {
   try {
     //! 1. Create Transporter
     const transporter = nodemailer.createTransport({
@@ -16,11 +16,9 @@ const sendPasswordEmail = async (to, resetToken) => {
     //! Create the message
     const message = {
       to,
-      subject: 'Password Reset',
-      html: `<p>You are receiving this email because you (or someone else) have requested to verify your account.</p>
-      <p>Please click on the follow ling, or posts this into your browser to complete the process:</p>
-      <p>http://localhost:5173/reset-password/${resetToken}</p>
-      <p>If you did not request this, please ignore this email and your password will remain uncharged.</p>`,
+      subject: 'New Post Created',
+      html: `<p>A new post has been created on our site Social Media</p>
+      <p>Click <a href="http://localhost:5173/posts/${postId}">here</a> to view the post.</p>`,
     };
     //! Send the mail
     const info = await transporter.sendMail(message);
@@ -33,4 +31,4 @@ const sendPasswordEmail = async (to, resetToken) => {
   }
 };
 
-module.exports = sendPasswordEmail;
+module.exports = sendNotificationMsg;

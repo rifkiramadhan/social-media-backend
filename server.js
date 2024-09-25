@@ -13,6 +13,7 @@ const stripePaymentRouter = require('./router/stripePayment/stripePaymentRouter'
 const calculateEarnings = require('./utils/calculateEarnings');
 const { schedule } = require('node-cron');
 const earningsRouter = require('./router/earning/earningsRouter');
+const notificationsRouter = require('./router/notification/notificationsRouter');
 
 //! Call the db
 connectDB();
@@ -63,6 +64,7 @@ app.use('/api/v1/categories', categoriesRouter);
 app.use('/api/v1/plans', plansRouter);
 app.use('/api/v1/stripe', stripePaymentRouter);
 app.use('/api/v1/earnings', earningsRouter);
+app.use('/api/v1/notifications', notificationsRouter);
 
 //! Not Found Handler
 app.use((req, res, next) => {
