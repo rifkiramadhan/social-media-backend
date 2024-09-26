@@ -373,6 +373,52 @@ const userController = {
       verifyToken,
     });
   }),
+
+  //! Update Email
+  updateEmail: asyncHandler(async (req, res) => {
+    //! Email
+    const { email } = req.body;
+
+    //! Find the user
+    const user = await User.findById(req.user);
+
+    //! Update the user email
+    user.email = email;
+    user.isEmailVerified = false;
+
+    //! Save the user
+    await user.save();
+
+    //! Use the method from the model
+    // const token = await user.generateAccVerificationToken();
+
+    //! Send the verification email
+    // sendAccVerificationEmail(user?.email, token);
+
+    //! Send the response
+    res.json({
+      message: `Account verification email sent to ${user?.email} token expires in 10 minutes a.`,
+    });
+  }),
+
+  //! Update Profile Picture
+  updateProfilePic: asyncHandler(async (req, res) => {
+    //! Find the user
+    await User.findByIdAndUpdate(
+      req.user,
+      {
+        $set: { profilePicture: req.file },
+      },
+      {
+        new: true,
+      }
+    );
+
+    //! Send the response
+    res.json({
+      message: 'Profile picture updated successfully',
+    });
+  }),
 };
 
 module.exports = userController;

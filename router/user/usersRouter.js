@@ -1,8 +1,10 @@
 const express = require('express');
 const userController = require('../../controllers/users/userController');
 const isAuthenticated = require('../../middlewares/isAuthenticated');
-
+const multer = require('multer');
+const storage = require('../../utils/fileupload');
 const usersRouter = express.Router();
+const upload = multer({ storage });
 
 //! Register
 usersRouter.post('/register', userController.register);
@@ -16,6 +18,13 @@ usersRouter.put(
   '/follow/:followId',
   isAuthenticated,
   userController.followUser
+);
+usersRouter.put('/update-email', isAuthenticated, userController.updateEmail);
+usersRouter.put(
+  '/upload-profile-picture',
+  isAuthenticated,
+  upload.single('image'),
+  userController.updateProfilePic
 );
 usersRouter.put(
   '/unfollow/:unfollowId',
