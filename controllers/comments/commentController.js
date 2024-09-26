@@ -34,20 +34,6 @@ const commentController = {
       commentCreated,
     });
   }),
-
-  //---- Get a Category ----//
-  getCategory: asyncHandler(async (req, res) => {}),
-
-  //---- Delete CAtegory ----//
-  delete: asyncHandler(async (req, res) => {}),
-
-  //---- Update Category ----//
-  update: asyncHandler(async (req, res) => {
-    res.json({
-      status: 'Category updated successfully',
-      categoryUpdated,
-    });
-  }),
 };
 
 module.exports = commentController;

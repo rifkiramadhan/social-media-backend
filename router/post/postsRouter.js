@@ -6,6 +6,7 @@ const isAuthenticated = require('../../middlewares/isAuthenticated');
 const checkUserPlan = require('../../middlewares/checkUserPlan');
 const optionalAuth = require('../../middlewares/optionalAuth');
 const isAccountVerified = require('../../middlewares/isAccountVerified');
+const isBlocked = require('../../middlewares/isBlocked');
 
 //! Create instance express router
 const upload = multer({ storage: storage });
@@ -17,6 +18,7 @@ const postsRouter = express.Router();
 postsRouter.post(
   '/create',
   isAuthenticated,
+  isBlocked,
   checkUserPlan,
   isAccountVerified,
   upload.single('image'),
@@ -27,24 +29,39 @@ postsRouter.post(
 postsRouter.get('/', postController.fetchAllPosts);
 
 //---- Update Post ----//
-//----update post----
 postsRouter.put(
   '/:postId',
   isAuthenticated,
+  isBlocked,
   upload.single('image'),
   postController.update
 );
 
 //---- Get Post ----//
-postsRouter.get('/:postId', optionalAuth, postController.getPost);
+postsRouter.get('/:postId', optionalAuth, isBlocked, postController.getPost);
 
 //---- Delete Post ----//
-postsRouter.delete('/:postId', isAuthenticated, postController.delete);
+postsRouter.delete(
+  '/:postId',
+  isAuthenticated,
+  isBlocked,
+  postController.delete
+);
 
 //---- Like Post ----//
-postsRouter.put('/likes/:postId', isAuthenticated, postController.like);
+postsRouter.put(
+  '/likes/:postId',
+  isAuthenticated,
+  isBlocked,
+  postController.like
+);
 
 //---- Dislike Post ----//
-postsRouter.put('/dislikes/:postId', isAuthenticated, postController.dislike);
+postsRouter.put(
+  '/dislikes/:postId',
+  isAuthenticated,
+  isBlocked,
+  postController.dislike
+);
 
 module.exports = postsRouter;

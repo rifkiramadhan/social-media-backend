@@ -13,7 +13,10 @@ usersRouter.get('/auth/google', userController.googleAuth);
 usersRouter.get('/auth/google/callback', userController.googleAuthCallback);
 usersRouter.get('/checkAuthenticated', userController.checkAuthenticated);
 usersRouter.post('/logout', userController.logout);
+usersRouter.put('/block-user', isAuthenticated, userController.blockUser);
+usersRouter.put('/unblock-user', isAuthenticated, userController.unblockUser);
 usersRouter.get('/profile', isAuthenticated, userController.profile);
+usersRouter.get('/lists', isAuthenticated, userController.listUsers);
 usersRouter.put(
   '/follow/:followId',
   isAuthenticated,

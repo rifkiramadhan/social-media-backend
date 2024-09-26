@@ -41,6 +41,10 @@ const postController = {
     //! Push the post into user
     userFound.posts.push(postCreated?._id);
 
+    //! Update the user account type
+    userFound.updateAccountType();
+    console.log(userFound);
+
     //! Save the updated user
     await userFound.save();
 

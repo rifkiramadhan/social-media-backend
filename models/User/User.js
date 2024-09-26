@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false, //! Set to false if password is not mandatory
     },
+    role: {
+      type: String,
+      default: 'user',
+    },
     googleId: {
       type: String,
       required: false, //! Required only for users logging in with Google
@@ -84,6 +88,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    accountType: {
+      type: String,
+      default: 'Basic',
+    },
+    isBlocked: {
+      type: Boolean,
+      defaults: false,
+    },
     //! User relationships
     followers: [
       {
@@ -128,6 +140,20 @@ userSchema.methods.generatePasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //! 10 Minutes
 
   return emailToken;
+};
+
+//! Method to update user accountType
+userSchema.methods.updateAccountType = function () {
+  //! Get the total posts
+  const postCount = this.posts.length;
+
+  if (postCount >= 50) {
+    this.accountType = 'Premium';
+  } else if (postCount >= 10) {
+    this.accountType = 'Standard';
+  } else {
+    this.accountType = 'Basic';
+  }
 };
 
 //! User Model

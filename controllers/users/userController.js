@@ -389,12 +389,6 @@ const userController = {
     //! Save the user
     await user.save();
 
-    //! Use the method from the model
-    // const token = await user.generateAccVerificationToken();
-
-    //! Send the verification email
-    // sendAccVerificationEmail(user?.email, token);
-
     //! Send the response
     res.json({
       message: `Account verification email sent to ${user?.email} token expires in 10 minutes a.`,
@@ -418,6 +412,53 @@ const userController = {
     res.json({
       message: 'Profile picture updated successfully',
     });
+  }),
+
+  blockUser: asyncHandler(async (req, res) => {
+    //! Find the user by id
+    const { userId } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { isBlocked: true },
+      { new: true }
+    );
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found!' });
+    } else {
+      res.json({
+        message: 'User successfully blocked',
+        username: user.username,
+        isBlocked: user.isBlocked,
+      });
+    }
+  }),
+
+  unblockUser: asyncHandler(async (req, res) => {
+    //! Find the user by id
+    const { userId } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { isBlocked: false },
+      { new: true }
+    );
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found!' });
+    } else {
+      res.json({
+        message: 'User successfully unblocked',
+        username: user.username,
+        isBlocked: user.isBlocked,
+      });
+    }
+  }),
+
+  listUsers: asyncHandler(async (req, res) => {
+    const users = await User.find();
+    res.json(users);
   }),
 };
 
