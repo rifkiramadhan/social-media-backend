@@ -5,6 +5,13 @@ const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy; //! Strategy for JWT
 const ExtractJWT = require('passport-jwt').ExtractJwt; //! Extract for JWT
 const GoogleStrategy = require('passport-google-oauth20');
+const { BASE_URL_API } = require('../../frontend/src/utils/baseEndpointURL');
+const {
+  UsersVersion,
+} = require('../../frontend/src/utils/baseEndpointVersion/usersVersion/usersVersion');
+const {
+  UsersGrouping,
+} = require('../../frontend/src/utils/baseEndpointGrouping/usersGrouping/usersGrouping');
 
 //! Configure passport local strategy
 passport.use(
@@ -78,7 +85,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:5000/api/v1/users/auth/google/callback',
+      callbackURL: `${BASE_URL_API}/${UsersVersion}/${UsersGrouping}/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
