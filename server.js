@@ -41,7 +41,7 @@ cron.schedule(
 const app = express();
 
 //! PORT
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 //! Middlewares
 app.use(express.json()); //! Pass json data
