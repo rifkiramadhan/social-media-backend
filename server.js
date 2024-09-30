@@ -48,7 +48,7 @@ app.use(express.json()); //! Pass json data
 
 //! Cors Middleware
 const corsOptions = {
-  origin: ['https://master--satgasnas.netlify.app'],
+  origin: [process.env.URL_PROD],
   credentials: true,
 };
 
