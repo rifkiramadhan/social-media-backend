@@ -94,7 +94,7 @@ const userController = {
         }
 
         if (!user) {
-          return res.redirect('http://localhost:5173/google-login-error');
+          return res.redirect(`http://localhost:5173/google-login-error`);
         }
 
         //! Generate the token

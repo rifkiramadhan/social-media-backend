@@ -47,9 +47,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json()); //! Pass json data
 
 //! Cors Middleware
-const BASE_URL_PROD = process.env.URL_PROD;
 const corsOptions = {
-  origin: [BASE_URL_PROD],
+  origin: ['https://master--satgasnas.netlify.app'],
   credentials: true,
 };
 
