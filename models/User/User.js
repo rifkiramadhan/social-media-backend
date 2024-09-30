@@ -9,6 +9,27 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    fullName: {
+      type: String,
+    },
+    age: {
+      type: Number,
+      default: 0,
+    },
+    phoneNumber: {
+      type: Number,
+      default: 0,
+    },
+    nik: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      enum: ['male', 'female'],
+    },
     profilePicture: {
       type: Object,
       default: null,
@@ -23,6 +44,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
+      enum: ['user', 'admin'],
+      required: true,
       default: 'user',
     },
     googleId: {

@@ -414,6 +414,39 @@ const userController = {
     });
   }),
 
+  updateProfileData: asyncHandler(async (req, res) => {
+    //! Find the user
+    const userId = req.user;
+
+    const { fullName, age, phoneNumber, bio, gender, nik } = req.body;
+
+    const updatedProfile = await User.findByIdAndUpdate(
+      userId,
+      {
+        fullName: fullName,
+        age: age,
+        phoneNumber: phoneNumber,
+        bio: bio,
+        gender: gender,
+        nik: nik,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({
+        message: 'User not found!',
+      });
+    }
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: updatedProfile,
+    });
+  }),
+
   blockUser: asyncHandler(async (req, res) => {
     //! Find the user by id
     const { userId } = req.body;

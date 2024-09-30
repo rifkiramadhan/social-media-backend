@@ -16,6 +16,11 @@ usersRouter.post('/logout', userController.logout);
 usersRouter.put('/block-user', isAuthenticated, userController.blockUser);
 usersRouter.put('/unblock-user', isAuthenticated, userController.unblockUser);
 usersRouter.get('/profile', isAuthenticated, userController.profile);
+usersRouter.put(
+  '/update-profile',
+  isAuthenticated,
+  userController.updateProfileData
+);
 usersRouter.get('/lists', isAuthenticated, userController.listUsers);
 usersRouter.put(
   '/follow/:followId',
