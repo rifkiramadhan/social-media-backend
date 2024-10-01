@@ -53,16 +53,19 @@ const userController = {
       //! Generate token
       const token = jwt.sign(
         {
-          id: user?._id,
+          id: user._id,
         },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        {
+          expiresIn: '1d',
+        }
       );
 
       //! Set the token into cookie
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000, //! 1 Day
       });
 
@@ -73,6 +76,7 @@ const userController = {
         username: user?.username,
         email: user?.email,
         _id: user?._id,
+        token: token,
       });
     })(req, res, next);
   }),
@@ -128,6 +132,14 @@ const userController = {
   checkAuthenticated: asyncHandler(async (req, res) => {
     const token = req.cookies['token'];
 
+    if (
+      !token &&
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
     if (!token) {
       return res.status(401).json({
         isAuthenticated: false,
@@ -139,7 +151,7 @@ const userController = {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       //! Field the user
-      const user = await User.findById(decoded.id);
+      const user = await User.findById(decoded.id).select('-password');
 
       if (!user) {
         return res.status(401).json({
