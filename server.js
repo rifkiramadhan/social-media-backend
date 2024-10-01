@@ -49,7 +49,7 @@ app.use(express.json()); //! Pass json data
 //! Cors Middleware
 const URL = process.env.URL_CLIENT_PROD;
 const corsOptions = {
-  origin: [URL, 'https://master--satgasnas.netlify.app'],
+  origin: [URL, 'https://social-media-frontend-sand.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
