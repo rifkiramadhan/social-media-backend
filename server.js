@@ -50,7 +50,7 @@ app.use(express.json()); //! Pass json data
 const URL = process.env.URL_CLIENT_PROD;
 const corsOptions = {
   origin: [URL, 'https://social-media-frontend-sand.vercel.app'],
-  credentials: true,
+  credentials: 'include',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };

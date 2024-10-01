@@ -131,6 +131,7 @@ const userController = {
     if (!token) {
       return res.status(401).json({
         isAuthenticated: false,
+        message: 'No authentication token found',
       });
     }
 
@@ -143,6 +144,7 @@ const userController = {
       if (!user) {
         return res.status(401).json({
           isAuthenticated: false,
+          message: 'User not found',
         });
       } else {
         return res.status(200).json({
