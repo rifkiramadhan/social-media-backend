@@ -59,7 +59,7 @@ const userController = {
       );
 
       //! Set the token into cookie
-      res.cookies('token', token, {
+      res.cookie('token', token, {
         httpOnly: true,
         secure: false || process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -111,7 +111,7 @@ const userController = {
         );
 
         //! Set the token into the cookie
-        res.cookies('token', token, {
+        res.cookie('token', token, {
           httpOnly: true,
           secure: false,
           sameSite: 'strict',
@@ -162,7 +162,7 @@ const userController = {
 
   //---- Logout ----//
   logout: asyncHandler(async (req, res) => {
-    res.cookies('token', '', { maxAge: 1 });
+    res.cookie('token', '', { maxAge: 1 });
 
     res.status(200).json({
       message: 'Logout Success',
@@ -265,7 +265,7 @@ const userController = {
     await user.save();
 
     //! Send the email
-    sendAccVerificationEmail(user?.email, token);
+    await sendAccVerificationEmail(user?.email, token);
 
     res.json({
       message: `Account verification email sent to ${user?.email} token expires in 10 minutes.`,
