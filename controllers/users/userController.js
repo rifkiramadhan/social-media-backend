@@ -61,7 +61,7 @@ const userController = {
       //! Set the token into cookie
       res.cookie('token', token, {
         httpOnly: true,
-        secure: false || process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000, //! 1 Day
       });
@@ -113,7 +113,7 @@ const userController = {
         //! Set the token into the cookie
         res.cookie('token', token, {
           httpOnly: true,
-          secure: false,
+          secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
           maxAge: 24 * 60 * 60 * 1000, //! 1 Day
         });
