@@ -18,7 +18,7 @@ const sendNotificationMsg = async (to, postId) => {
       to,
       subject: 'New Post Created',
       html: `<p>A new post has been created on our site Social Media</p>
-      <p>Click <a href="http://localhost:5173/posts/${postId}">here</a> to view the post.</p>`,
+      <p>Click <a href="${process.env.URL_CLIENT_PROD}/posts/${postId}">here</a> to view the post.</p>`,
     };
     //! Send the mail
     const info = await transporter.sendMail(message);

@@ -47,7 +47,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json()); //! Pass json data
 
 //! Cors Middleware
-const URL = process.env.URL_PROD;
+const URL = process.env.URL_CLIENT_PROD;
 const corsOptions = {
   origin: [URL],
   credentials: true,

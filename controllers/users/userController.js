@@ -94,7 +94,9 @@ const userController = {
         }
 
         if (!user) {
-          return res.redirect(`http://localhost:5173/google-login-error`);
+          return res.redirect(
+            `${process.env.URL_CLIENT_PROD}/google-login-error`
+          );
         }
 
         //! Generate the token
@@ -117,7 +119,7 @@ const userController = {
         });
 
         //! Redirect the user dashboard
-        res.redirect('http://localhost:5173/dashboard');
+        res.redirect(`${process.env.URL_CLIENT_PROD}/dashboard`);
       }
     )(req, res, next);
   }),
