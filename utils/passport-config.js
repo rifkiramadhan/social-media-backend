@@ -46,8 +46,8 @@ const options = {
   jwtFromRequest: ExtractJWT.fromExtractors([
     req => {
       let token = null;
-      if (req && req.cookie) {
-        token = req.cookie['token'];
+      if (req && req.cookies) {
+        token = req.cookies['token'];
         return token;
       }
     },

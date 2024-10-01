@@ -59,7 +59,7 @@ const userController = {
       );
 
       //! Set the token into cookie
-      res.cookie('token', token, {
+      res.cookies('token', token, {
         httpOnly: true,
         secure: false || process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -111,7 +111,7 @@ const userController = {
         );
 
         //! Set the token into the cookie
-        res.cookie('token', token, {
+        res.cookies('token', token, {
           httpOnly: true,
           secure: false,
           sameSite: 'strict',
@@ -126,7 +126,7 @@ const userController = {
 
   //---- Check User Authentication Status ----//
   checkAuthenticated: asyncHandler(async (req, res) => {
-    const token = req.cookie['token'];
+    const token = req.cookies['token'];
 
     if (!token) {
       return res.status(401).json({
@@ -162,7 +162,7 @@ const userController = {
 
   //---- Logout ----//
   logout: asyncHandler(async (req, res) => {
-    res.cookie('token', '', { maxAge: 1 });
+    res.cookies('token', '', { maxAge: 1 });
 
     res.status(200).json({
       message: 'Logout Success',
