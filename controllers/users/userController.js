@@ -177,8 +177,10 @@ const userController = {
   //---- Logout ----//
   logout: asyncHandler(async (req, res) => {
     res.cookie('token', '', {
-      maxAge: 1,
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 0,
     });
 
     res.status(200).json({
