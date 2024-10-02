@@ -176,6 +176,16 @@ const userController = {
 
   //---- Logout ----//
   logout: asyncHandler(async (req, res) => {
+    const token =
+      req.cookies['token'] || req.headers.authorization?.split(' ')[1];
+
+    if (token) {
+      await User.findOneAndUpdate(
+        { 'tokens.token': token },
+        { $pull: { tokens: { token: token } } }
+      );
+    }
+
     res.cookie('token', '', {
       maxAge: 1,
       httpOnly: true,
