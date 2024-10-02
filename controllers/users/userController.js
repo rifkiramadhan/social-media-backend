@@ -179,7 +179,6 @@ const userController = {
     res.cookie('token', '', {
       maxAge: 1,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
     });
 
     res.status(200).json({
