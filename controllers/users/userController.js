@@ -132,13 +132,13 @@ const userController = {
   checkAuthenticated: asyncHandler(async (req, res) => {
     const token = req.cookies['token'];
 
-    if (
-      !token &&
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
-    }
+    // if (
+    //   !token &&
+    //   req.headers.authorization &&
+    //   req.headers.authorization.startsWith('Bearer')
+    // ) {
+    //   token = req.headers.authorization.split(' ')[1];
+    // }
 
     if (!token) {
       return res.status(401).json({
@@ -176,7 +176,18 @@ const userController = {
 
   //---- Logout ----//
   logout: asyncHandler(async (req, res) => {
-    res.cookie('token', '', { maxAge: 1 });
+    res.cookie('token', '', {
+      maxAge: 1,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    if (req.session) {
+      req.session.destroy(err => {
+        if (err) console.log('Error destroying session:', err);
+      });
+    }
 
     res.status(200).json({
       message: 'Logout Success',
