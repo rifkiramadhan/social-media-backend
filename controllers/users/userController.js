@@ -65,7 +65,7 @@ const userController = {
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
+        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000, //! 1 Day
       });
 
@@ -118,7 +118,7 @@ const userController = {
         res.cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'none',
+          sameSite: 'strict',
           maxAge: 24 * 60 * 60 * 1000, //! 1 Day
         });
 
@@ -131,14 +131,6 @@ const userController = {
   //---- Check User Authentication Status ----//
   checkAuthenticated: asyncHandler(async (req, res) => {
     const token = req.cookies['token'];
-
-    // if (
-    //   !token &&
-    //   req.headers.authorization &&
-    //   req.headers.authorization.startsWith('Bearer')
-    // ) {
-    //   token = req.headers.authorization.split(' ')[1];
-    // }
 
     if (!token) {
       return res.status(401).json({
@@ -179,7 +171,7 @@ const userController = {
     res.cookie('token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      sameSite: 'strict',
       maxAge: 1,
     });
 
