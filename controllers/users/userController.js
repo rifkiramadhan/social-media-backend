@@ -203,8 +203,6 @@ const userController = {
     //! 2. Get the user to follow (req.params)
     const followId = req.params.followId;
 
-    //! 3. Update the users followers and following arrays
-
     //! Update the user who is following a user
     await User.findByIdAndUpdate(
       userId,
@@ -320,13 +318,15 @@ const userController = {
   //! Forgot Password (Sending Email Token)
   forgotPassword: asyncHandler(async (req, res) => {
     //! Find the user email
-    const { email } = req.body;
+    const { username, email } = req.body;
 
     //! Find the user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username, email });
 
     if (!user) {
-      throw new Error(`User with email ${email} is not found in our database!`);
+      throw new Error(
+        `User with username ${username} and email ${email} is not found in our database!`
+      );
     }
 
     //! Check if user registered with google
