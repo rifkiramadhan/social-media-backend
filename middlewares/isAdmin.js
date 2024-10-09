@@ -7,7 +7,7 @@ const isAdmin = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user);
 
     //! Check user plan
-    if (user?.role !== 'admin') {
+    if (user?.role !== 'user') {
       return res.status(401).json({
         message: 'Access denied, admin only!',
       });

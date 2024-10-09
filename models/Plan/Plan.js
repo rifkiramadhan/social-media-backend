@@ -8,7 +8,10 @@ const planSchema = new mongoose.Schema(
       required: true,
     },
     features: [String],
-    // limitations: [String],
+    limitations: {
+      type: Number,
+      required: true,
+    },
     price: {
       type: Number,
       required: true,

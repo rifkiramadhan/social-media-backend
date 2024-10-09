@@ -4,6 +4,7 @@ const Category = require('../../models/Category/Category');
 const User = require('../../models/User/User');
 const Notification = require('../../models/Notification/Notification');
 const sendNotificationMsg = require('../../utils/sendNotificationMsg');
+const Plan = require('../../models/Plan/Plan');
 
 const postController = {
   //---- Create Post ----//
@@ -22,6 +23,30 @@ const postController = {
 
     if (!userFound) {
       throw new Error('User not found!');
+    }
+
+    //! Check user's plan
+    if (!userFound.plan) {
+      // If user doesn't have a plan, assign the Free plan
+      const freePlan = await Plan.findOne({ planName: 'Free' });
+      if (!freePlan) {
+        throw new Error('Free plan not found in the database');
+      }
+      userFound.plan = freePlan._id;
+      await userFound.save();
+    }
+
+    //! Reload user to ensure we have the latest data
+    await userFound.populate('plan');
+
+    //! Check post count for Free plan users
+    if (userFound.plan.planName === 'Free') {
+      const userPostCount = await Post.countDocuments({ author: req.user });
+      if (userPostCount >= userFound.plan.limitations) {
+        throw new Error(
+          'You have reached the maximum number of posts allowed for your Free plan. Please try Premium plan!'
+        );
+      }
     }
 
     //! Create the post
