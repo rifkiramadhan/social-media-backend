@@ -189,6 +189,14 @@ const postController = {
       throw new Error('Post not found!');
     }
 
+    //! Check if the logged-in user is the author of the post
+    if (postFound.author.toString() !== req.user.toString()) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'You are not authorized to delete this post!',
+      });
+    }
+
     //! Remove post from the category
     const categoryFound = await Category.findById(postFound.category);
 
@@ -216,6 +224,14 @@ const postController = {
 
     if (!postFound) {
       throw new Error('Post not found!');
+    }
+
+    //! Check if the logged-in user is the author of the post
+    if (postFound.author.toString() !== req.user.toString()) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'You are not authorized to update this post!',
+      });
     }
 
     const { description, category } = req.body;
