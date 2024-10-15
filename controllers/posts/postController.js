@@ -5,6 +5,8 @@ const User = require('../../models/User/User');
 const Notification = require('../../models/Notification/Notification');
 const sendNotificationMsg = require('../../utils/sendNotificationMsg');
 const Plan = require('../../models/Plan/Plan');
+const { slugify } = require('../../utils/slugHelper');
+const cheerio = require('cheerio');
 
 const postController = {
   //---- Create Post ----//
@@ -49,12 +51,31 @@ const postController = {
       }
     }
 
+    //! Extract <h1> content from description
+    const $ = cheerio.load(description);
+    const h1Content = $('h1').text(); // Get text inside <h1>
+
+    //! If <h1> is not found, you can handle it accordingly
+    if (!h1Content) {
+      throw new Error('Please create your description!');
+    }
+
+    const slug = slugify(description);
+
+    //! Check if category exists
+    const postFound = await Post.findOne({ slug });
+
+    if (postFound) {
+      throw new Error('Post already exists!');
+    }
+
     //! Create the post
     const postCreated = await Post.create({
       description,
       image: req.file,
       author: req.user,
       category,
+      slug,
     });
 
     //! Push the post into category (Corrected)
@@ -236,6 +257,25 @@ const postController = {
 
     const { description, category } = req.body;
 
+    //! Extract <h1> content from description
+    const $ = cheerio.load(description);
+    const h1Content = $('h1').text(); // Get text inside <h1>
+
+    // If <h1> is not found, you can handle it accordingly
+    if (!h1Content) {
+      throw new Error('Please edit your description!');
+    }
+
+    //! Generate slug from the <h1> content in description
+    const slug = slugify(description);
+
+    // Check for unique slug
+    let uniqueSlug = slug;
+    let count = 1;
+    while (await Post.findOne({ slug: uniqueSlug })) {
+      uniqueSlug = `${slug}-${count++}`;
+    }
+
     //! Check if the category has been updated
     if (postFound.category.toString() !== category) {
       //! Remove post from the old category
@@ -260,6 +300,7 @@ const postController = {
         description: description || postFound.description, //! Update description if provided, or keep old
         category: category || postFound.category, //! Update category if provided, or keep old
         image: req.file || postFound.image, //! Update image if provided, or keep old
+        slug: uniqueSlug,
       },
       {
         new: true,

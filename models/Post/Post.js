@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { slugify } = require('../../utils/slugHelper');
 
 const postSchema = new mongoose.Schema(
   {
@@ -6,6 +7,10 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+    slug: {
+      type: String,
+      unique: true,
     },
     image: {
       type: Object,
@@ -79,5 +84,12 @@ const postSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+postSchema.pre('save', function (next) {
+  if (this.isModified('description')) {
+    this.slug = slugify(this.description);
+  }
+  next();
+});
 
 module.exports = mongoose.model('Post', postSchema);
