@@ -124,7 +124,7 @@ const postController = {
 
   //----List All Posts ----//
   fetchAllPosts: asyncHandler(async (req, res) => {
-    const { category, title, page = 1, limit = 10 } = req.query;
+    const { category, title, page = 1, limit = 12 } = req.query;
 
     //! Basic Filter
     let filter = {};
